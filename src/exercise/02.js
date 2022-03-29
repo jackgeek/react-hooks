@@ -28,10 +28,20 @@ export default App
 
 function useLocalStorageState(key, initialValue) {
   const [value, setValue] = React.useState(
-    () => window.localStorage.getItem(key) ?? initialValue,
+    () => tryParse(window.localStorage.getItem(key)) ?? initialValue,
   )
 
-  React.useEffect(() => window.localStorage.setItem(key, value), [key, value])
+  React.useEffect(() => {
+    window.localStorage.setItem(key, JSON.stringify(value))
+  }, [key, value])
 
   return [value, setValue]
+}
+
+function tryParse(value, parseFailValue) {
+  try {
+    return JSON.parse(value)
+  } catch (err) {
+    return parseFailValue
+  }
 }
